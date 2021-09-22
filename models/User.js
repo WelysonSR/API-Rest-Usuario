@@ -35,7 +35,7 @@ class User {
     }
     //Criat User "End"
 
-    //User Listing / ID "Start"
+    //User Listing / ID / Email "Start"
     async findAll() {
         try {
             let result = await knex.select(["id", "name", "email", "role"]).table("users");
@@ -59,7 +59,21 @@ class User {
             return undefined;
         }
     }
-    //User Listing / ID "End"
+
+    async findByEmail(email) {
+        try {
+            let result = await knex.select(["id", "name", "email", "role"]).where({ email: email }).table("users");
+            if (result.length > 0) {
+                return result[0];
+            } else {
+                return undefined;
+            }
+        } catch (err) {
+            console.log(err);
+            return undefined;
+        }
+    }
+    //User Listing / ID / Email "End"
 
     //Edit User "Start"
     async update(id, name, email, role) {
@@ -118,6 +132,14 @@ class User {
         }
     }
     //Delete user "End"
+
+    //Edit Password "Start"
+    async changePassword(newPassword,id,token){
+        let hash = await bcrypt.hash(newPassword, 10);
+        await knex.update({password: hash}).where({id: id}).table("users");
+        await PasswordToken.setUsed(token);
+    }
+    //Edit Password "End"
 
 }
 

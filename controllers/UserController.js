@@ -1,4 +1,4 @@
-const { json } = require("body-parser");
+let PasswordToken = require("../models/PasswordToken")
 let User = require("../models/User");
 class UserController {
 
@@ -56,7 +56,7 @@ class UserController {
         let { id, name, email, role } = req.body;
 
         console.log(id, name, email, role);
-       let result = await User.update( id, name, email, role);
+        let result = await User.update(id, name, email, role);
         if (result != undefined) {
             if (result.status) {
                 res.status(200);
@@ -71,17 +71,45 @@ class UserController {
         }
     }
 
-    async delete(req, res){
+    async delete(req, res) {
         let id = req.params.id;
 
         let result = await User.delete(id);
 
-        if(result.status){
+        if (result.status) {
             res.status(200);
             res.send("Cadastro excluído com sucesso!")
+        } else {
+            res.status(406);
+            res.send(result.err);
+        }
+    }
+
+    async recorverPassword(req, res) {
+        let email = req.body.email;
+
+        let result = await PasswordToken.create(email);
+
+        if(result.status){
+            res.status(200);
+            res.send(""+result.token);
         }else{
             res.status(406);
             res.send(result.err);
+        }
+    }
+
+    async changePassword(req, res){
+        let token = req.body.token;
+        let password = req.body.password;
+        let isTokenValid = await PasswordToken.validate(token);
+        if(isTokenValid.status){
+            await User.changePassword(password,isTokenValid.token.user_id,isTokenValid.token.token);
+            res.status(200);
+            res.send("Senha alterada com sucesso!");
+        }else{
+            res.status(406);
+            res.send("Token inválido!");
         }
     }
 

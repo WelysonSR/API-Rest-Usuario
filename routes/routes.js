@@ -10,6 +10,8 @@ router.get('/user', UserController.index);
 router.get('/user/:id', UserController.fidUser);
 //Route POST
 router.post('/user', UserController.create);
+router.post('/recorverpassword', UserController.recorverPassword);
+router.post("/changepassword",UserController.changePassword);
 //Route PUT
 router.put('/user', UserController.edit);
 //Route DELETE
