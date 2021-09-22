@@ -1,5 +1,6 @@
 let knex = require("../database/connection");
 let bcrypt = require("bcrypt");
+const { json } = require("body-parser");
 
 class User {
 
@@ -37,7 +38,7 @@ class User {
     //User Listing / ID "Start"
     async findAll() {
         try {
-            let result = await knex.select(["id","name","email","role"]).table("users");
+            let result = await knex.select(["id", "name", "email", "role"]).table("users");
             return result;
         } catch (err) {
             console.log(err);
@@ -47,10 +48,10 @@ class User {
 
     async findById(id) {
         try {
-            let result = await knex.select(["id","name","email","role"]).where({id: id}).table("users");
-            if(result.length > 0){
+            let result = await knex.select(["id", "name", "email", "role"]).where({ id: id }).table("users");
+            if (result.length > 0) {
                 return result[0];
-            }else{
+            } else {
                 return undefined;
             }
         } catch (err) {
@@ -59,6 +60,47 @@ class User {
         }
     }
     //User Listing / ID "End"
+
+    //Edit User "Start"
+    async update(id, name, email, role) {
+
+        var user = await this.findById(id);
+
+        if (user != undefined) {
+
+            var editUser = {};
+
+            if (email != undefined && email != user.email) {
+
+                var result = await this.findEmail(email);
+                if (result == false) {
+                    editUser.email = email;
+                } else {
+                    return { status: false, err: "O e-mail inserido já existe no sistema!" }
+                }
+
+            }
+
+            if (name != undefined) {
+                editUser.name = name;
+            }
+
+            if (role != undefined) {
+                editUser.role = role;
+            }
+
+            try {
+                await knex.update(editUser).where({ id: id }).table("users");
+                return { status: true }
+            } catch (err) {
+                return { status: false, err: err }
+            }
+
+        } else {
+            return { status: false, err: "O usuário não existe!" }
+        }
+    }
+    //Edit User "End"
 
 }
 
