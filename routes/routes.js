@@ -4,13 +4,16 @@ let router = express.Router();
 let HomeController = require("../controllers/HomeController");
 let UserController = require("../controllers/UserController");
 
-//Rout GAT
+//Route GAT
 router.get('/', HomeController.index);
 router.get('/user', UserController.index);
 router.get('/user/:id', UserController.fidUser);
-//Rout POST
+//Route POST
 router.post('/user', UserController.create);
-//Rout PUT
+//Route PUT
 router.put('/user', UserController.edit);
+//Route DELETE
+router.delete('/user/:id', UserController.delete);
+
 
 module.exports = router;
