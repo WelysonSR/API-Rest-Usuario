@@ -1,7 +1,11 @@
 let User = require("../models/User");
 class UserController {
 
-    async index(req, res) { }
+    async index(req, res) { 
+        let users = await User.findAll();
+        res.status(200);
+        res.json(users);
+    }
 
     async create(req, res) {
         let { name, email, password } = req.body;
@@ -33,6 +37,20 @@ class UserController {
         res.status(200);
         res.send("E-mail cadastrado com sucesso!");
     }
+
+    async fidUser(req,res){
+        let id = req.params.id;
+        let user = await User.findById(id);
+        
+        if(user == undefined){
+            res.status(404);
+            res.send("Usuario não encontrado!")
+        }else{
+            res.status(200);
+            res.json(user);
+        }
+    }
+
 }
 
 module.exports = new UserController();
